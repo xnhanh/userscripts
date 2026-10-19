@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         E-Hentai Mobile View (Home, /g/, /s/)
 // @namespace    http://tampermonkey.net/
-// @version      2.9
+// @version      2.10
 // @description  Tối ưu giao diện mobile cho trang chủ, gallery /g/ và reader /s/ trên E-Hentai
 // @author       XNhanhS & AI
 // @match        *://e-hentai.org/g/*
@@ -1058,10 +1058,10 @@
                 display: block !important;
                 width: 100% !important;
             }
-            html.eh-home-mobile-active table.itg > tbody > tr:first-child {
+            html.eh-home-mobile-active table.itg:not(.glte) > tbody > tr:first-child {
                 display: none !important;
             }
-            html.eh-home-mobile-active table.itg > tbody > tr:not(:first-child) {
+            html.eh-home-mobile-active table.itg:not(.glte) > tbody > tr:not(:first-child) {
                 display: grid !important;
                 grid-template-columns: 78px minmax(0, 1fr) !important;
                 grid-template-areas: "category title" "meta title" "uploader uploader" !important;
@@ -1177,42 +1177,183 @@
             html.eh-home-mobile-active table.itg td.gl4c a {
                 color: #9ca3af !important;
             }
-            html.eh-home-mobile-active[data-eh-home-display-mode="t"] table.itg > tbody > tr:not(:first-child) {
-                grid-template-columns: minmax(0, 1fr) !important;
-                grid-template-areas: "category" "meta" "title" "uploader" !important;
-            }
-            html.eh-home-mobile-active[data-eh-home-display-mode="t"] table.itg td.gl2c {
-                display: grid !important;
-                grid-template-columns: minmax(0, 1fr) !important;
-                gap: 6px !important;
-            }
-            html.eh-home-mobile-active[data-eh-home-display-mode="t"] table.itg td.gl2c > .glthumb {
-                position: relative !important;
-                top: auto !important;
+            /* Extended mode keeps one gallery per row, with tags nested in the title cell. */
+            html.eh-home-mobile-active table.itg.glte {
                 display: block !important;
+                width: 100% !important;
+                table-layout: auto !important;
+            }
+            html.eh-home-mobile-active table.itg.glte > tbody {
+                display: block !important;
+                width: 100% !important;
+            }
+            html.eh-home-mobile-active table.itg.glte > tbody > tr {
+                display: grid !important;
+                grid-template-columns: minmax(76px, 28vw) minmax(0, 1fr) !important;
+                grid-template-areas: "preview details" !important;
+                align-items: start !important;
+                box-sizing: border-box !important;
+                width: calc(100% - 16px) !important;
+                max-width: calc(100% - 16px) !important;
+                min-width: 0 !important;
+                margin: 0 8px 8px !important;
+                padding: 7px !important;
+                border: 1px solid #343741 !important;
+                border-radius: 10px !important;
+                background: #1e2025 !important;
+            }
+            html.eh-home-mobile-active table.itg.glte td.gl1e {
+                grid-area: preview !important;
+                display: flex !important;
+                align-items: flex-start !important;
+                justify-content: center !important;
+                width: auto !important;
+                padding: 3px !important;
+                overflow: hidden !important;
+            }
+            html.eh-home-mobile-active table.itg.glte td.gl1e > div {
+                display: flex !important;
+                align-items: flex-start !important;
+                justify-content: center !important;
                 box-sizing: border-box !important;
                 width: 100% !important;
                 height: auto !important;
-                max-height: 220px !important;
+                max-height: 180px !important;
+                overflow: hidden !important;
+            }
+            html.eh-home-mobile-active table.itg.glte td.gl1e img {
+                position: static !important;
+                display: block !important;
+                width: auto !important;
+                height: auto !important;
+                max-width: 100% !important;
+                max-height: 180px !important;
+                object-fit: contain !important;
+            }
+            html.eh-home-mobile-active table.itg.glte td.gl2e {
+                grid-area: details !important;
+                display: block !important;
+                width: auto !important;
+                min-width: 0 !important;
+                padding: 3px !important;
+                overflow: hidden !important;
+            }
+            html.eh-home-mobile-active table.itg.glte .gl3e {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                gap: 4px 8px !important;
+                color: #adb3bf !important;
+                font-size: 10px !important;
+                line-height: 1.3 !important;
+            }
+            html.eh-home-mobile-active table.itg.glte .gl4e {
+                display: block !important;
+                min-height: 0 !important;
+                margin-top: 6px !important;
+                color: #e5e7eb !important;
+                font-size: 13px !important;
+                line-height: 1.35 !important;
+                overflow-wrap: anywhere !important;
+            }
+            html.eh-home-mobile-active table.itg.glte .gl4e table {
+                display: block !important;
+                width: 100% !important;
+                margin-top: 5px !important;
+                border: 0 !important;
+                border-spacing: 0 !important;
+            }
+            html.eh-home-mobile-active table.itg.glte .gl4e table tbody {
+                display: block !important;
+                width: 100% !important;
+            }
+            html.eh-home-mobile-active table.itg.glte .gl4e table tr {
+                display: grid !important;
+                grid-template-columns: 54px minmax(0, 1fr) !important;
+                width: 100% !important;
+                margin: 2px 0 !important;
+            }
+            html.eh-home-mobile-active table.itg.glte .gl4e table td {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                min-width: 0 !important;
+                padding: 2px !important;
+                color: #cbd2df !important;
+                font-size: 9px !important;
+                overflow-wrap: anywhere !important;
+            }
+            html.eh-home-mobile-active table.itg.glte .gl4e table td.tc {
+                color: #9ca3af !important;
+            }
+            /* Thumbnail mode is a div grid (.gld/.gl1t), not the compact table layout. */
+            html.eh-home-mobile-active .itg.gld {
+                display: grid !important;
+                grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr)) !important;
+                gap: 8px !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 8px !important;
+            }
+            html.eh-home-mobile-active .itg.gld > .gl1t {
+                display: grid !important;
+                grid-template-columns: minmax(0, 1fr) !important;
+                gap: 6px !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                padding: 8px !important;
+                border: 1px solid #343741 !important;
+                border-radius: 10px !important;
+                background: #1e2025 !important;
+                overflow: hidden !important;
+            }
+            html.eh-home-mobile-active .itg.gld .gl4t {
+                display: block !important;
+                min-width: 0 !important;
+                color: #f3f4f6 !important;
+                font-size: 14px !important;
+                line-height: 1.35 !important;
+                overflow-wrap: anywhere !important;
+            }
+            html.eh-home-mobile-active .itg.gld .gl3t {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                height: auto !important;
+                max-height: 65vh !important;
                 margin: 0 auto !important;
                 overflow: hidden !important;
             }
-            html.eh-home-mobile-active[data-eh-home-display-mode="t"] table.itg td.gl2c > .glthumb > div:first-child {
+            html.eh-home-mobile-active .itg.gld .gl3t a {
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
                 width: 100% !important;
-                height: auto !important;
-                max-height: 220px !important;
+                max-height: 65vh !important;
             }
-            html.eh-home-mobile-active[data-eh-home-display-mode="t"] table.itg td.gl2c > .glthumb img {
+            html.eh-home-mobile-active .itg.gld .gl3t img {
                 position: static !important;
-                top: auto !important;
+                display: block !important;
                 width: auto !important;
                 height: auto !important;
                 max-width: 100% !important;
-                max-height: 220px !important;
+                max-height: 65vh !important;
                 object-fit: contain !important;
+            }
+            html.eh-home-mobile-active .itg.gld .gl5t {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: space-between !important;
+                gap: 6px 12px !important;
+                color: #adb3bf !important;
+                font-size: 10px !important;
+                line-height: 1.3 !important;
             }
             html.eh-home-mobile-active .dp {
                 box-sizing: border-box !important;
@@ -1227,6 +1368,9 @@
             @media (max-width: 360px) {
                 html.eh-home-mobile-active table.itg > tbody > tr:not(:first-child) {
                     grid-template-columns: 68px minmax(0, 1fr) !important;
+                }
+                html.eh-home-mobile-active table.itg.glte > tbody > tr {
+                    grid-template-columns: minmax(64px, 25vw) minmax(0, 1fr) !important;
                 }
                 html.eh-home-mobile-active table.itg .glink {
                     font-size: 13px !important;
