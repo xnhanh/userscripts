@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         E-Hentai Mobile View (Home, /g/, /s/)
 // @namespace    http://tampermonkey.net/
-// @version      2.10
+// @version      2.11
 // @description  Tối ưu giao diện mobile cho trang chủ, gallery /g/ và reader /s/ trên E-Hentai
 // @author       XNhanhS & AI
 // @match        *://e-hentai.org/g/*
@@ -1020,29 +1020,37 @@
                 display: flex !important;
                 flex-wrap: wrap !important;
                 align-items: center !important;
-                justify-content: center !important;
-                gap: 4px !important;
+                justify-content: space-between !important;
+                gap: 2px !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                padding: 6px 8px !important;
+                padding: 5px 8px !important;
                 background: transparent !important;
             }
             html.eh-home-mobile-active .searchnav > div {
                 box-sizing: border-box !important;
-                padding: 4px !important;
+                flex: 0 1 auto !important;
+                min-width: 0 !important;
+                padding: 1px 2px !important;
                 color: #c3c7d0 !important;
-                font-size: 11px !important;
+                font-size: 10px !important;
             }
             html.eh-home-mobile-active .searchnav a {
                 color: #e5e7eb !important;
+                white-space: nowrap !important;
             }
             html.eh-home-mobile-active .searchnav select {
-                max-width: 100% !important;
-                min-height: 34px !important;
+                box-sizing: border-box !important;
+                width: auto !important;
+                max-width: 104px !important;
+                min-width: 0 !important;
+                min-height: 30px !important;
+                padding: 3px 18px 3px 6px !important;
                 border: 1px solid #454955 !important;
                 border-radius: 7px !important;
                 background: #202228 !important;
                 color: #fff !important;
+                font-size: 10px !important;
             }
             html.eh-home-mobile-active table.itg {
                 display: block !important;
@@ -1238,17 +1246,64 @@
                 padding: 3px !important;
                 overflow: hidden !important;
             }
+            html.eh-home-mobile-active table.itg.glte td.gl2e > div {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+            }
             html.eh-home-mobile-active table.itg.glte .gl3e {
                 display: flex !important;
                 flex-wrap: wrap !important;
                 align-items: center !important;
                 gap: 4px 8px !important;
+                float: none !important;
+                clear: both !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                max-width: 100% !important;
                 color: #adb3bf !important;
                 font-size: 10px !important;
                 line-height: 1.3 !important;
             }
+            html.eh-home-mobile-active table.itg.glte .gl3e > div {
+                float: none !important;
+                flex: 0 1 auto !important;
+                width: auto !important;
+                max-width: 100% !important;
+                min-height: 0 !important;
+                margin: 0 !important;
+                overflow-wrap: anywhere !important;
+            }
+            html.eh-home-mobile-active table.itg.glte .gl3e .cn {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                min-height: 26px !important;
+                padding: 4px 8px !important;
+                border-radius: 7px !important;
+                font-size: 10px !important;
+                line-height: 1.2 !important;
+                white-space: normal !important;
+            }
+            html.eh-home-mobile-active table.itg.glte td.gl2e > div > a {
+                display: block !important;
+                float: none !important;
+                clear: both !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+            }
             html.eh-home-mobile-active table.itg.glte .gl4e {
                 display: block !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                max-width: 100% !important;
                 min-height: 0 !important;
                 margin-top: 6px !important;
                 color: #e5e7eb !important;
@@ -1261,6 +1316,7 @@
                 width: 100% !important;
                 margin-top: 5px !important;
                 border: 0 !important;
+                table-layout: fixed !important;
                 border-spacing: 0 !important;
             }
             html.eh-home-mobile-active table.itg.glte .gl4e table tbody {
@@ -1282,8 +1338,24 @@
                 font-size: 9px !important;
                 overflow-wrap: anywhere !important;
             }
+            html.eh-home-mobile-active table.itg.glte .gl4e table .gt,
+            html.eh-home-mobile-active table.itg.glte .gl4e table .gtl {
+                display: inline-block !important;
+                max-width: 100% !important;
+                margin: 2px 3px 2px 0 !important;
+                padding: 2px 5px !important;
+                border: 1px solid #343741 !important;
+                border-radius: 5px !important;
+                background: #292c34 !important;
+                color: #cbd2df !important;
+                font-size: 9px !important;
+                line-height: 1.25 !important;
+                white-space: normal !important;
+                overflow-wrap: anywhere !important;
+            }
             html.eh-home-mobile-active table.itg.glte .gl4e table td.tc {
                 color: #9ca3af !important;
+                font-size: 9px !important;
             }
             /* Thumbnail mode is a div grid (.gld/.gl1t), not the compact table layout. */
             html.eh-home-mobile-active .itg.gld {
