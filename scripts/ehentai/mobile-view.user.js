@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         E-Hentai Mobile View (Home, /g/, /s/)
 // @namespace    http://tampermonkey.net/
-// @version      2.17
+// @version      2.18
 // @description  Tối ưu giao diện mobile cho trang chủ, gallery /g/ và reader /s/ trên E-Hentai
 // @author       XNhanhS & AI
 // @match        *://e-hentai.org/*
@@ -23,6 +23,10 @@
     const isHomepage = path === '/';
     const isSmallScreen = window.innerWidth <= 850;
     let isMobileMode = GM_getValue('eh_mobile_restructure_active', isSmallScreen);
+    // Mark reader documents before their first paint so the original light page cannot flash.
+    if (path.startsWith('/s/') && isMobileMode && document.documentElement) {
+        document.documentElement.classList.add('eh-reader-mobile-active', 'eh-reader-fit-width');
+    }
     let readerControlsObserver = null;
     let readerToolbarResizeObserver = null;
     let readerToolbarResizeTarget = null;
@@ -1809,14 +1813,20 @@
 
             /* READER /s/: ảnh vừa màn hình và điều hướng luôn nằm cạnh dưới */
             html.eh-reader-mobile-active,
-            html.eh-reader-mobile-active body {
+            html.eh-reader-mobile-active body,
+            html.eh-reader-mobile-active #i1,
+            html.eh-reader-mobile-active #i2,
+            html.eh-reader-mobile-active #i3,
+            html.eh-reader-mobile-active #i3 > a,
+            html.eh-reader-mobile-active #i4 {
                 width: 100% !important;
                 max-width: 100vw !important;
                 min-width: 0 !important;
                 margin: 0 !important;
                 padding: 0 !important;
-                background: #141518 !important;
+                background-color: #141518 !important;
                 color: #e5e7eb !important;
+                color-scheme: dark !important;
                 overflow-x: hidden !important;
                 box-sizing: border-box !important;
             }
