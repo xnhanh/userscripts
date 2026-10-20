@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         E-Hentai Mobile View (Home, /g/, /s/)
 // @namespace    http://tampermonkey.net/
-// @version      2.11
+// @version      2.12
 // @description  Tối ưu giao diện mobile cho trang chủ, gallery /g/ và reader /s/ trên E-Hentai
 // @author       XNhanhS & AI
 // @match        *://e-hentai.org/g/*
@@ -1465,6 +1465,7 @@
             html.eh-reader-mobile-active #i1.sni {
                 box-sizing: border-box !important;
                 width: 100% !important;
+                min-width: 0 !important;
                 max-width: 100% !important;
                 margin: 0 auto !important;
                 padding: 8px 10px calc(var(--eh-reader-toolbar-height, 60px) + max(24px, env(safe-area-inset-bottom, 0px)) + 16px) !important;
