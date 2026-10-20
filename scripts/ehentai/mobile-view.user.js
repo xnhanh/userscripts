@@ -1,15 +1,11 @@
 // ==UserScript==
 // @name         E-Hentai Mobile View (Home, /g/, /s/)
 // @namespace    http://tampermonkey.net/
-// @version      2.13
+// @version      2.14
 // @description  Tối ưu giao diện mobile cho trang chủ, gallery /g/ và reader /s/ trên E-Hentai
 // @author       XNhanhS & AI
-// @match        *://e-hentai.org/g/*
-// @match        *://exhentai.org/g/*
-// @match        *://e-hentai.org/s/*
-// @match        *://exhentai.org/s/*
-// @match        *://e-hentai.org/
-// @match        *://exhentai.org/
+// @match        *://e-hentai.org/*
+// @match        *://exhentai.org/*
 // @icon         https://e-hentai.org/favicon.ico
 // @grant        GM_setValue
 // @grant        GM_getValue
@@ -40,6 +36,17 @@
     } else {
         initMobileApp();
     }
+    // E-Hentai may restore or update result pages without a fresh DOMContentLoaded.
+    window.addEventListener('pageshow', reapplyHomeMobileMode);
+    window.addEventListener('popstate', reapplyHomeMobileMode);
+
+    function reapplyHomeMobileMode() {
+        if (!isMobileMode || window.location.pathname !== '/') return;
+        window.setTimeout(() => {
+            createDesktopFloatingSwitch();
+            applyHomeMobileMode();
+        }, 0);
+    }
 
     function ensureViewportMeta() {
         let meta = document.querySelector('meta[name="viewport"]');
@@ -54,6 +61,7 @@
     }
 
     function initMobileApp() {
+        if (!isHomepage && !path.startsWith('/g/') && !path.startsWith('/s/')) return;
         createDesktopFloatingSwitch();
 
         if (path.startsWith('/s/')) {
@@ -66,7 +74,7 @@
             return;
         }
 
-        if (isMobileMode) {
+        if (path.startsWith('/g/') && isMobileMode) {
             buildAndMountMobileApp();
         }
     }
@@ -845,6 +853,8 @@
                 top: 0 !important;
                 z-index: 1000 !important;
                 display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: center !important;
                 align-items: center !important;
                 gap: 4px !important;
                 box-sizing: border-box !important;
@@ -852,9 +862,9 @@
                 max-width: 100vw !important;
                 margin: 0 !important;
                 padding: 6px 8px !important;
-                overflow-x: auto !important;
-                overflow-y: hidden !important;
-                white-space: nowrap !important;
+                overflow-x: visible !important;
+                overflow-y: visible !important;
+                white-space: normal !important;
                 background: #202228 !important;
                 border-bottom: 1px solid #343741 !important;
                 scrollbar-width: none !important;
