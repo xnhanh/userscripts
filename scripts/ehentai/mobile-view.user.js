@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         E-Hentai Mobile View (Home, /g/, /s/)
 // @namespace    http://tampermonkey.net/
-// @version      2.15
+// @version      2.16
 // @description  Tối ưu giao diện mobile cho trang chủ, gallery /g/ và reader /s/ trên E-Hentai
 // @author       XNhanhS & AI
 // @match        *://e-hentai.org/*
@@ -1039,15 +1039,48 @@
             }
             html.eh-home-mobile-active #advdiv,
             html.eh-home-mobile-active #fsdiv {
+                box-sizing: border-box !important;
                 max-width: 100% !important;
                 overflow-x: hidden !important;
+                font-size: 13px !important;
+                line-height: 1.45 !important;
             }
             html.eh-home-mobile-active #advdiv table,
             html.eh-home-mobile-active #fsdiv table {
+                display: block !important;
                 box-sizing: border-box !important;
                 width: 100% !important;
                 max-width: 100% !important;
                 table-layout: fixed !important;
+            }
+            html.eh-home-mobile-active #advdiv tbody,
+            html.eh-home-mobile-active #fsdiv tbody {
+                display: block !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            html.eh-home-mobile-active #advdiv tr,
+            html.eh-home-mobile-active #fsdiv tr {
+                display: grid !important;
+                grid-template-columns: repeat(auto-fit, minmax(min(100%, 145px), 1fr)) !important;
+                gap: 6px !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 0 6px !important;
+            }
+            html.eh-home-mobile-active #advdiv td,
+            html.eh-home-mobile-active #fsdiv td {
+                display: flex !important;
+                align-items: center !important;
+                gap: 7px !important;
+                box-sizing: border-box !important;
+                width: auto !important;
+                min-width: 0 !important;
+                max-width: 100% !important;
+                padding: 4px !important;
+                line-height: 1.4 !important;
+                vertical-align: middle !important;
+                overflow-wrap: anywhere !important;
             }
             html.eh-home-mobile-active #advdiv input,
             html.eh-home-mobile-active #advdiv select,
@@ -1058,6 +1091,32 @@
                 box-sizing: border-box !important;
                 max-width: 100% !important;
                 min-width: 0 !important;
+            }
+            html.eh-home-mobile-active #advdiv input[type="checkbox"],
+            html.eh-home-mobile-active #advdiv input[type="radio"],
+            html.eh-home-mobile-active #fsdiv input[type="checkbox"],
+            html.eh-home-mobile-active #fsdiv input[type="radio"] {
+                flex: 0 0 20px !important;
+                width: 20px !important;
+                height: 20px !important;
+                margin: 0 2px 0 0 !important;
+            }
+            html.eh-home-mobile-active #fsdiv input[type="file"] {
+                flex: 1 1 180px !important;
+                width: 100% !important;
+                min-height: 40px !important;
+                padding: 4px !important;
+            }
+            html.eh-home-mobile-active #fsdiv input[type="submit"],
+            html.eh-home-mobile-active #fsdiv button {
+                min-height: 40px !important;
+                padding: 6px 12px !important;
+            }
+            html.eh-home-mobile-active #advdiv label,
+            html.eh-home-mobile-active #fsdiv label {
+                min-width: 0 !important;
+                line-height: 1.4 !important;
+                overflow-wrap: anywhere !important;
             }
             html.eh-home-mobile-active #rangebar {
                 display: flex !important;
@@ -1360,6 +1419,15 @@
                 inset: auto !important;
                 float: none !important;
                 clear: both !important;
+                transform: none !important;
+                height: auto !important;
+                min-height: 0 !important;
+                max-height: none !important;
+            }
+            html.eh-home-mobile-active table.itg.glte td.gl2e * {
+                position: static !important;
+                inset: auto !important;
+                float: none !important;
                 transform: none !important;
                 height: auto !important;
                 min-height: 0 !important;
