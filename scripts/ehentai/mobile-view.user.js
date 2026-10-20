@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         E-Hentai Mobile View (Home, /g/, /s/)
 // @namespace    http://tampermonkey.net/
-// @version      2.20
+// @version      2.21
 // @description  Tối ưu giao diện mobile cho trang chủ, gallery /g/ và reader /s/ trên E-Hentai
 // @author       XNhanhS & AI
 // @match        *://e-hentai.org/*
@@ -205,11 +205,51 @@
             syncReaderImageActions(nav);
             syncReaderToolbarSpacing(nav);
         }
+        setupReaderEdgeTapZones();
         updateReaderViewButton();
         if (!readerControlsObserver && document.querySelector('#i1')) {
             readerControlsObserver = new MutationObserver(setupReaderViewControls);
             readerControlsObserver.observe(document.querySelector('#i1'), { childList: true, subtree: true });
         }
+    }
+
+    function setupReaderEdgeTapZones() {
+        const root = document.documentElement;
+        if (!root.classList.contains('eh-reader-mobile-active')) {
+            document.querySelectorAll('.eh-reader-edge-tap-zone').forEach((zone) => zone.remove());
+            return;
+        }
+
+        [
+            { side: 'left', selector: '#i2 .sn a#prev', label: 'Ảnh trước' },
+            { side: 'right', selector: '#i2 .sn a#next', label: 'Ảnh tiếp theo' }
+        ].forEach(({ side, selector, label }) => {
+            let zone = document.querySelector(`.eh-reader-edge-tap-zone[data-side="${side}"]`);
+            if (zone) return;
+
+            zone = document.createElement('button');
+            zone.type = 'button';
+            zone.className = 'eh-reader-edge-tap-zone';
+            zone.dataset.side = side;
+            zone.setAttribute('aria-label', label);
+            zone.title = label;
+
+            let pointerStart = null;
+            zone.addEventListener('pointerdown', (event) => {
+                pointerStart = { x: event.clientX, y: event.clientY };
+            }, { passive: true });
+            zone.addEventListener('click', (event) => {
+                if (event.detail !== 0 && pointerStart &&
+                    Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y) > 14) {
+                    pointerStart = null;
+                    return;
+                }
+                pointerStart = null;
+                const navigationLink = document.querySelector(selector);
+                if (navigationLink) navigationLink.click();
+            });
+            document.body.appendChild(zone);
+        });
     }
 
     function syncReaderImageActions(nav) {
@@ -665,15 +705,39 @@
     function renderTagsCard(data) {
         const card = document.createElement('div');
         card.className = 'eh-m-section-card';
-        card.innerHTML = `<h3 class="eh-m-section-title">🏷️ Phân loại Tags</h3>`;
+        const toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.className = 'eh-m-section-title eh-m-tags-toggle';
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.innerHTML = '<span>🏷️ Phân loại Tags</span><span class="eh-m-tags-chevron" aria-hidden="true">＋</span>';
+        card.appendChild(toggle);
 
         if (data.tagGroups.length === 0) {
-            card.innerHTML += `<div style="font-size: 12px; color: #888;">Không có tag</div>`;
+            const emptyMessage = document.createElement('div');
+            emptyMessage.className = 'eh-m-tags-empty';
+            emptyMessage.innerText = 'Không có tag';
+            emptyMessage.hidden = true;
+            toggle.addEventListener('click', () => {
+                const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+                toggle.setAttribute('aria-expanded', String(!isExpanded));
+                emptyMessage.hidden = isExpanded;
+                toggle.querySelector('.eh-m-tags-chevron').innerText = isExpanded ? '＋' : '−';
+            });
+            card.appendChild(emptyMessage);
             return card;
         }
 
         const container = document.createElement('div');
         container.className = 'eh-m-tags-container';
+        container.hidden = true;
+        container.id = 'eh-m-tags-container';
+        toggle.setAttribute('aria-controls', container.id);
+        toggle.addEventListener('click', () => {
+            const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+            toggle.setAttribute('aria-expanded', String(!isExpanded));
+            container.hidden = isExpanded;
+            toggle.querySelector('.eh-m-tags-chevron').innerText = isExpanded ? '＋' : '−';
+        });
 
         data.tagGroups.forEach(grp => {
             const row = document.createElement('div');
@@ -829,6 +893,7 @@
                 isMobileMode = false;
                 GM_setValue('eh_mobile_restructure_active', false);
                 document.documentElement.classList.remove('eh-reader-mobile-active');
+                document.querySelectorAll('.eh-reader-edge-tap-zone').forEach((zone) => zone.remove());
                 syncReaderDesktopSwitch(document.querySelector('#eh-reader-control-bar'));
                 return;
             }
@@ -2088,6 +2153,29 @@
             html.eh-reader-mobile-active #i4 .sn {
                 display: none !important;
             }
+            html.eh-reader-mobile-active .eh-reader-edge-tap-zone {
+                position: fixed !important;
+                z-index: 2147483644 !important;
+                top: 0 !important;
+                bottom: calc(var(--eh-reader-toolbar-height, 60px) + max(24px, env(safe-area-inset-bottom, 0px)) + 8px) !important;
+                width: clamp(52px, 16vw, 78px) !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                border: 0 !important;
+                border-radius: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                opacity: 0 !important;
+                touch-action: pan-y !important;
+                -webkit-tap-highlight-color: transparent !important;
+            }
+            html.eh-reader-mobile-active .eh-reader-edge-tap-zone[data-side="left"] {
+                left: 0 !important;
+            }
+            html.eh-reader-mobile-active .eh-reader-edge-tap-zone[data-side="right"] {
+                right: 0 !important;
+            }
             html.eh-reader-mobile-active #eh-reader-control-bar {
                 position: fixed !important;
                 z-index: 2147483647 !important;
@@ -2433,6 +2521,37 @@
                 font-weight: bold;
                 color: #00ff88;
                 margin: 0 0 10px 0;
+            }
+            .eh-m-tags-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                padding: 0;
+                border: 0;
+                background: transparent;
+                font-family: inherit;
+                text-align: left;
+                cursor: pointer;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .eh-m-tags-toggle[aria-expanded="false"] {
+                margin-bottom: 0;
+            }
+            .eh-m-tags-chevron {
+                flex: 0 0 auto;
+                margin-left: 10px;
+                color: #a8b3ad;
+                font-size: 18px;
+                line-height: 1;
+            }
+            .eh-m-tags-empty {
+                font-size: 12px;
+                color: #888;
+            }
+            .eh-m-tags-empty[hidden],
+            .eh-m-tags-container[hidden] {
+                display: none !important;
             }
 
             /* 5. Meta Grid */
