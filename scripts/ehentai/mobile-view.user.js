@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         E-Hentai Mobile View (Home, /g/, /s/)
 // @namespace    http://tampermonkey.net/
-// @version      2.16
+// @version      2.17
 // @description  Tối ưu giao diện mobile cho trang chủ, gallery /g/ và reader /s/ trên E-Hentai
 // @author       XNhanhS & AI
 // @match        *://e-hentai.org/*
@@ -1158,6 +1158,11 @@
                 text-align: center !important;
             }
             html.eh-home-mobile-active .searchnav {
+                position: static !important;
+                inset: auto !important;
+                float: none !important;
+                transform: none !important;
+                height: auto !important;
                 display: grid !important;
                 grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
                 box-sizing: border-box !important;
@@ -1211,7 +1216,9 @@
                 font-size: 10px !important;
             }
             html.eh-home-mobile-active table.itg {
-                display: block !important;
+                display: contents !important;
+                height: auto !important;
+                min-height: 0 !important;
                 box-sizing: border-box !important;
                 width: 100% !important;
                 max-width: 100% !important;
@@ -1223,13 +1230,17 @@
             html.eh-home-mobile-active table.itg > tbody {
                 display: block !important;
                 width: 100% !important;
+                height: auto !important;
+                min-height: 0 !important;
             }
             html.eh-home-mobile-active table.itg:not(.glte) > tbody > tr:first-child {
                 display: none !important;
             }
             html.eh-home-mobile-active table.itg:not(.glte) > tbody > tr:not(:first-child) {
                 display: grid !important;
-                grid-template-columns: 78px minmax(0, 1fr) !important;
+                height: auto !important;
+                min-height: 0 !important;
+                grid-template-columns: 92px minmax(0, 1fr) !important;
                 grid-template-areas: "category title" "meta title" "uploader uploader" !important;
                 align-items: start !important;
                 box-sizing: border-box !important;
@@ -1291,6 +1302,8 @@
             }
             html.eh-home-mobile-active table.itg td.gl2c .ir {
                 flex: 0 0 16px !important;
+                width: 80px !important;
+                height: 16px !important;
             }
             html.eh-home-mobile-active table.itg td.gl2c .gldown img {
                 width: 16px !important;
@@ -1343,9 +1356,112 @@
             html.eh-home-mobile-active table.itg td.gl4c a {
                 color: #9ca3af !important;
             }
+            /* Minimal / Minimal+ use a different set of cell classes (.gltm, gl1m-gl6m). */
+            html.eh-home-mobile-active table.itg.gltm > tbody > tr:not(:first-child) {
+                grid-template-columns: 92px minmax(0, 1fr) !important;
+                grid-template-areas: "category title" "meta title" "rating title" "uploader torrent" !important;
+            }
+            html.eh-home-mobile-active table.itg.gltm td.gl1m { grid-area: category !important; }
+            html.eh-home-mobile-active table.itg.gltm td.gl1m .cs {
+                position: static !important;
+                inset: auto !important;
+                float: none !important;
+                transform: none !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                min-height: 30px !important;
+                padding: 4px 3px !important;
+                border-radius: 7px !important;
+                font-size: 10px !important;
+                line-height: 1.15 !important;
+                text-align: center !important;
+                white-space: normal !important;
+            }
+            html.eh-home-mobile-active table.itg.gltm td.gl2m {
+                grid-area: meta !important;
+                color: #adb3bf !important;
+                font-size: 10px !important;
+                line-height: 1.25 !important;
+            }
+            html.eh-home-mobile-active table.itg.gltm td.gl2m > .glcut,
+            html.eh-home-mobile-active table.itg.gltm td.gl2m > .glthumb { display: none !important; }
+            html.eh-home-mobile-active table.itg.gltm td.gl2m > div:last-child {
+                display: block !important;
+                width: 100% !important;
+                overflow-wrap: anywhere !important;
+            }
+            html.eh-home-mobile-active table.itg.gltm td.gl3m { grid-area: title !important; }
+            html.eh-home-mobile-active table.itg.gltm td.gl4m {
+                grid-area: rating !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-start !important;
+                overflow: hidden !important;
+            }
+            html.eh-home-mobile-active table.itg.gltm td.gl4m .ir {
+                flex: 0 0 80px !important;
+                width: 80px !important;
+                height: 16px !important;
+            }
+            html.eh-home-mobile-active table.itg.gltm td.gl5m {
+                grid-area: uploader !important;
+                min-width: 0 !important;
+                color: #9ca3af !important;
+                font-size: 10px !important;
+                overflow-wrap: anywhere !important;
+            }
+            html.eh-home-mobile-active table.itg.gltm td.gl5m a {
+                color: #9ca3af !important;
+                text-decoration: none !important;
+            }
+            html.eh-home-mobile-active table.itg.gltm td.gl6m {
+                grid-area: torrent !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: flex-end !important;
+            }
+            html.eh-home-mobile-active table.itg.gltm td.gl6m img,
+            html.eh-home-mobile-active table.itg.gltm td.gl2m .gldown img {
+                width: 16px !important;
+                height: 16px !important;
+                object-fit: contain !important;
+            }
+            /* Compact rows need a larger metadata column and static child flow. */
+            html.eh-home-mobile-active table.itg.gltc td.gl2c *,
+            html.eh-home-mobile-active table.itg.gltc td.gl4c * {
+                position: static !important;
+                inset: auto !important;
+                float: none !important;
+                transform: none !important;
+                height: auto !important;
+                min-height: 0 !important;
+                max-height: none !important;
+            }
+            html.eh-home-mobile-active table.itg.gltc td.gl2c > .glcut,
+            html.eh-home-mobile-active table.itg.gltc td.gl2c > .glthumb { display: none !important; }
+            html.eh-home-mobile-active table.itg.gltc td.gl2c > .glthumb .ir { display: none !important; }
+            html.eh-home-mobile-active table.itg.gltc td.gl2c > div:last-child {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 4px !important;
+                width: 100% !important;
+                white-space: normal !important;
+                overflow-wrap: anywhere !important;
+            }
+            html.eh-home-mobile-active table.itg.gltc td.gl4c > div {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                gap: 4px 10px !important;
+                min-width: 0 !important;
+            }
             /* Extended mode keeps one gallery per row, with tags nested in the title cell. */
             html.eh-home-mobile-active table.itg.glte {
-                display: block !important;
+                display: contents !important;
                 width: 100% !important;
                 table-layout: auto !important;
             }
@@ -1446,6 +1562,11 @@
                 color: #adb3bf !important;
                 font-size: 10px !important;
                 line-height: 1.3 !important;
+            }
+            html.eh-home-mobile-active table.itg.glte .gl3e a {
+                color: #9ca3af !important;
+                text-decoration: none !important;
+                overflow-wrap: anywhere !important;
             }
             html.eh-home-mobile-active table.itg.glte .gl3e > div {
                 float: none !important;
@@ -1605,13 +1726,64 @@
                 object-fit: contain !important;
             }
             html.eh-home-mobile-active .itg.gld .gl5t {
+                position: static !important;
+                inset: auto !important;
+                float: none !important;
+                transform: none !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                height: auto !important;
+                max-height: none !important;
                 display: flex !important;
-                flex-wrap: wrap !important;
-                justify-content: space-between !important;
-                gap: 6px 12px !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 5px !important;
                 color: #adb3bf !important;
                 font-size: 10px !important;
                 line-height: 1.3 !important;
+            }
+            html.eh-home-mobile-active .itg.gld .gl5t * {
+                position: static !important;
+                inset: auto !important;
+                float: none !important;
+                transform: none !important;
+            }
+            html.eh-home-mobile-active .itg.gld .gl5t > div {
+                position: static !important;
+                inset: auto !important;
+                float: none !important;
+                transform: none !important;
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                gap: 4px 8px !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                height: auto !important;
+                max-height: none !important;
+            }
+            html.eh-home-mobile-active .itg.gld .gl5t .cs {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: auto !important;
+                max-width: 100% !important;
+                min-height: 24px !important;
+                padding: 3px 7px !important;
+                border-radius: 6px !important;
+                font-size: 10px !important;
+                line-height: 1.2 !important;
+            }
+            html.eh-home-mobile-active .itg.gld .gl5t .ir {
+                flex: 0 0 80px !important;
+                width: 80px !important;
+                height: 16px !important;
+            }
+            html.eh-home-mobile-active .itg.gld .gl5t .gldown img {
+                width: 16px !important;
+                height: 16px !important;
+                object-fit: contain !important;
             }
             html.eh-home-mobile-active .dp {
                 box-sizing: border-box !important;
@@ -1625,7 +1797,7 @@
             }
             @media (max-width: 360px) {
                 html.eh-home-mobile-active table.itg > tbody > tr:not(:first-child) {
-                    grid-template-columns: 68px minmax(0, 1fr) !important;
+                    grid-template-columns: 80px minmax(0, 1fr) !important;
                 }
                 html.eh-home-mobile-active table.itg.glte > tbody > tr {
                     grid-template-columns: minmax(64px, 25vw) minmax(0, 1fr) !important;
