@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         E-Hentai Mobile View (Home, /g/, /s/)
 // @namespace    http://tampermonkey.net/
-// @version      2.18
+// @version      2.19
 // @description  Tối ưu giao diện mobile cho trang chủ, gallery /g/ và reader /s/ trên E-Hentai
 // @author       XNhanhS & AI
 // @match        *://e-hentai.org/*
@@ -189,6 +189,7 @@
 
         if (nav) {
             syncReaderDesktopSwitch(nav);
+            syncReaderImageActions(nav);
             syncReaderToolbarSpacing(nav);
         }
         updateReaderViewButton();
@@ -196,6 +197,54 @@
             readerControlsObserver = new MutationObserver(setupReaderViewControls);
             readerControlsObserver.observe(document.querySelector('#i1'), { childList: true, subtree: true });
         }
+    }
+
+    function syncReaderImageActions(nav) {
+        const sourceLinks = Array.from(document.querySelectorAll('a'));
+        const actionSources = [
+            {
+                id: 'eh-reader-show-galleries',
+                source: sourceLinks.find((link) => /show galleries with (this )?image/i.test(link.textContent.trim())),
+                label: '🔎 Ảnh tương tự',
+                ariaLabel: 'Show galleries with this image'
+            },
+            {
+                id: 'eh-reader-download-original',
+                source: sourceLinks.find((link) => /download original/i.test(link.textContent.trim())),
+                label: '⬇ Ảnh gốc',
+                ariaLabel: 'Download original image'
+            }
+        ];
+
+        let row = nav.querySelector('#eh-reader-image-actions');
+        if (!actionSources.some((action) => action.source)) {
+            if (row) row.remove();
+            return;
+        }
+        if (!row) {
+            row = document.createElement('div');
+            row.id = 'eh-reader-image-actions';
+            row.setAttribute('aria-label', 'Thao tác ảnh');
+            nav.appendChild(row);
+        }
+
+        actionSources.forEach((action) => {
+            let link = row.querySelector(`#${action.id}`);
+            if (!action.source) {
+                if (link) link.remove();
+                return;
+            }
+            if (!link) {
+                link = action.source.cloneNode(false);
+                link.id = action.id;
+                link.className = 'eh-reader-image-action';
+                row.appendChild(link);
+            }
+            link.href = action.source.href;
+            link.textContent = action.label;
+            link.title = action.source.textContent.trim();
+            link.setAttribute('aria-label', action.ariaLabel);
+        });
     }
 
     function syncReaderToolbarSpacing(nav) {
@@ -489,7 +538,7 @@
         const header = document.createElement('div');
         header.className = 'eh-m-header';
         header.innerHTML = `
-            <div class="eh-m-logo">E-Hentai Mobile</div>
+            <a class="eh-m-logo" href="/" aria-label="Về trang chủ E-Hentai">E-Hentai Mobile</a>
             <button class="eh-m-desktop-btn">💻 Xem Desktop</button>
         `;
 
@@ -1886,7 +1935,7 @@
             }
             @media (max-width: 440px) {
                 html.eh-reader-mobile-active #eh-reader-control-bar {
-                    flex-wrap: nowrap !important;
+                    flex-wrap: wrap !important;
                     justify-content: space-between !important;
                     gap: 3px !important;
                     padding: 6px max(6px, env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-right)) !important;
@@ -1959,9 +2008,37 @@
                 height: 24px !important;
             }
             html.eh-reader-mobile-active #eh-reader-control-bar > div {
+                flex-shrink: 1 !important;
+                min-width: 0 !important;
+                margin: 0 !important;
                 color: #00ff88 !important;
                 font-size: 13px !important;
                 font-weight: 700 !important;
+                white-space: nowrap !important;
+            }
+            html.eh-reader-mobile-active #eh-reader-control-bar #eh-reader-image-actions {
+                order: 20 !important;
+                display: flex !important;
+                flex: 0 0 100% !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 8px !important;
+                min-width: 0 !important;
+                margin: 0 !important;
+            }
+            html.eh-reader-mobile-active #eh-reader-control-bar #eh-reader-image-actions a {
+                flex: 0 1 auto !important;
+                width: auto !important;
+                min-width: 0 !important;
+                min-height: 30px !important;
+                padding: 0 9px !important;
+                border: 1px solid #3b414d !important;
+                border-radius: 8px !important;
+                color: #e5e7eb !important;
+                font-size: 11px !important;
+                font-weight: 600 !important;
+                line-height: 1.2 !important;
+                text-decoration: none !important;
                 white-space: nowrap !important;
             }
             html.eh-reader-mobile-active #i3 {
@@ -2051,10 +2128,12 @@
                 margin-bottom: 12px;
             }
             .eh-m-logo {
+                display: block;
                 font-size: 17px;
                 font-weight: 800;
                 color: #00ff88;
                 letter-spacing: 0.5px;
+                text-decoration: none;
             }
             .eh-m-desktop-btn {
                 background: #2b2d34;
