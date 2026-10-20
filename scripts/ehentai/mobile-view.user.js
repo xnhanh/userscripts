@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         E-Hentai Mobile View (Home, /g/, /s/)
 // @namespace    http://tampermonkey.net/
-// @version      2.12
+// @version      2.13
 // @description  Tối ưu giao diện mobile cho trang chủ, gallery /g/ và reader /s/ trên E-Hentai
 // @author       XNhanhS & AI
 // @match        *://e-hentai.org/g/*
@@ -831,6 +831,8 @@
                 margin: 0 !important;
                 padding: 0 !important;
                 overflow-x: hidden !important;
+                -webkit-text-size-adjust: 100% !important;
+                text-size-adjust: 100% !important;
                 background: #141518 !important;
                 color: #e5e7eb !important;
                 box-sizing: border-box !important;
@@ -993,7 +995,24 @@
             html.eh-home-mobile-active #advdiv,
             html.eh-home-mobile-active #fsdiv {
                 max-width: 100% !important;
-                overflow-x: auto !important;
+                overflow-x: hidden !important;
+            }
+            html.eh-home-mobile-active #advdiv table,
+            html.eh-home-mobile-active #fsdiv table {
+                box-sizing: border-box !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                table-layout: fixed !important;
+            }
+            html.eh-home-mobile-active #advdiv input,
+            html.eh-home-mobile-active #advdiv select,
+            html.eh-home-mobile-active #advdiv textarea,
+            html.eh-home-mobile-active #fsdiv input,
+            html.eh-home-mobile-active #fsdiv select,
+            html.eh-home-mobile-active #fsdiv textarea {
+                box-sizing: border-box !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
             }
             html.eh-home-mobile-active #rangebar {
                 display: flex !important;
@@ -1006,9 +1025,27 @@
                 overflow-y: hidden !important;
                 white-space: nowrap !important;
                 scrollbar-width: thin !important;
+                border-radius: 10px !important;
+                background: #202228 !important;
             }
             html.eh-home-mobile-active #rangebar a {
                 flex: 0 0 auto !important;
+            }
+            html.eh-home-mobile-active #rangebar a > div {
+                box-sizing: border-box !important;
+                width: 14px !important;
+                height: 14px !important;
+                min-width: 14px !important;
+                min-height: 14px !important;
+                margin: 3px 2px !important;
+                border: 1px solid #4b5563 !important;
+                border-radius: 50% !important;
+                background: #30343d !important;
+            }
+            html.eh-home-mobile-active #rangebar a > div[data-inrange="1"] {
+                border-color: #34d399 !important;
+                background: #059669 !important;
+                box-shadow: 0 0 0 2px rgba(52, 211, 153, .2) !important;
             }
             html.eh-home-mobile-active .searchtext {
                 padding: 6px 8px !important;
@@ -1017,35 +1054,52 @@
                 text-align: center !important;
             }
             html.eh-home-mobile-active .searchnav {
-                display: flex !important;
-                flex-wrap: wrap !important;
+                display: grid !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                box-sizing: border-box !important;
                 align-items: center !important;
-                justify-content: space-between !important;
-                gap: 2px !important;
+                justify-items: stretch !important;
+                gap: 4px !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                padding: 5px 8px !important;
+                padding: 6px 8px 8px !important;
                 background: transparent !important;
             }
             html.eh-home-mobile-active .searchnav > div {
                 box-sizing: border-box !important;
-                flex: 0 1 auto !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 100% !important;
                 min-width: 0 !important;
-                padding: 1px 2px !important;
+                min-height: 34px !important;
+                padding: 3px !important;
+                border: 1px solid #343741 !important;
+                border-radius: 8px !important;
+                background: #1e2025 !important;
                 color: #c3c7d0 !important;
-                font-size: 10px !important;
+                font-size: 11px !important;
+            }
+            html.eh-home-mobile-active .searchnav > div:first-child:empty {
+                display: none !important;
             }
             html.eh-home-mobile-active .searchnav a {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                width: 100% !important;
+                min-height: 30px !important;
                 color: #e5e7eb !important;
                 white-space: nowrap !important;
+                text-decoration: none !important;
             }
             html.eh-home-mobile-active .searchnav select {
                 box-sizing: border-box !important;
-                width: auto !important;
-                max-width: 104px !important;
+                width: 100% !important;
+                max-width: 100% !important;
                 min-width: 0 !important;
                 min-height: 30px !important;
-                padding: 3px 18px 3px 6px !important;
+                padding: 3px 5px !important;
                 border: 1px solid #454955 !important;
                 border-radius: 7px !important;
                 background: #202228 !important;
@@ -1256,6 +1310,16 @@
                 max-width: 100% !important;
                 overflow: hidden !important;
             }
+            html.eh-home-mobile-active table.itg.glte td.gl2e > div > * {
+                position: static !important;
+                inset: auto !important;
+                float: none !important;
+                clear: both !important;
+                transform: none !important;
+                height: auto !important;
+                min-height: 0 !important;
+                max-height: none !important;
+            }
             html.eh-home-mobile-active table.itg.glte .gl3e {
                 display: flex !important;
                 flex-wrap: wrap !important;
@@ -1277,10 +1341,15 @@
                 max-width: 100% !important;
                 min-height: 0 !important;
                 margin: 0 !important;
+                padding: 0 !important;
                 overflow-wrap: anywhere !important;
             }
             html.eh-home-mobile-active table.itg.glte .gl3e .cn {
                 display: inline-flex !important;
+                position: static !important;
+                inset: auto !important;
+                float: none !important;
+                transform: none !important;
                 align-items: center !important;
                 justify-content: center !important;
                 min-height: 26px !important;
@@ -1301,6 +1370,10 @@
             }
             html.eh-home-mobile-active table.itg.glte .gl4e {
                 display: block !important;
+                position: static !important;
+                float: none !important;
+                clear: both !important;
+                transform: none !important;
                 box-sizing: border-box !important;
                 width: 100% !important;
                 max-width: 100% !important;
