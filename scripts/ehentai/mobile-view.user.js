@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         E-Hentai Mobile View (Home, /g/, /s/)
 // @namespace    http://tampermonkey.net/
-// @version      2.14
+// @version      2.15
 // @description  Tối ưu giao diện mobile cho trang chủ, gallery /g/ và reader /s/ trên E-Hentai
 // @author       XNhanhS & AI
 // @match        *://e-hentai.org/*
@@ -37,14 +37,16 @@
         initMobileApp();
     }
     // E-Hentai may restore or update result pages without a fresh DOMContentLoaded.
-    window.addEventListener('pageshow', reapplyHomeMobileMode);
-    window.addEventListener('popstate', reapplyHomeMobileMode);
+    window.addEventListener('pageshow', reapplyMobileListingMode);
+    window.addEventListener('popstate', reapplyMobileListingMode);
 
-    function reapplyHomeMobileMode() {
-        if (!isMobileMode || window.location.pathname !== '/') return;
+    function reapplyMobileListingMode() {
+        if (!isMobileMode) return;
         window.setTimeout(() => {
+            if (window.location.pathname !== '/' && !isGalleryListingPage()) return;
             createDesktopFloatingSwitch();
-            applyHomeMobileMode();
+            if (window.location.pathname === '/') applyHomeMobileMode();
+            else applyGalleryListingMobileMode();
         }, 0);
     }
 
@@ -61,22 +63,44 @@
     }
 
     function initMobileApp() {
-        if (!isHomepage && !path.startsWith('/g/') && !path.startsWith('/s/')) return;
-        createDesktopFloatingSwitch();
-
         if (path.startsWith('/s/')) {
+            createDesktopFloatingSwitch();
             if (isMobileMode) applyReaderMobileMode();
             return;
         }
 
         if (isHomepage) {
+            createDesktopFloatingSwitch();
             if (isMobileMode) applyHomeMobileMode();
             return;
         }
 
-        if (path.startsWith('/g/') && isMobileMode) {
-            buildAndMountMobileApp();
+        if (path.startsWith('/g/')) {
+            createDesktopFloatingSwitch();
+            if (isMobileMode) buildAndMountMobileApp();
+            return;
         }
+
+        if (isGalleryListingPage()) {
+            createDesktopFloatingSwitch();
+            if (isMobileMode) applyGalleryListingMobileMode();
+        }
+    }
+
+    // E-Hentai's gallery lists (Popular, Watched, Favourites, Torrents, etc.) share .itg.
+    function isGalleryListingPage() {
+        return !window.location.pathname.startsWith('/g/') &&
+            !window.location.pathname.startsWith('/s/') &&
+            !!document.querySelector('.itg');
+    }
+
+    function applyGalleryListingMobileMode() {
+        document.documentElement.classList.add('eh-home-mobile-active');
+        const displayMode = document.querySelector('.searchnav select');
+        if (displayMode) {
+            document.documentElement.dataset.ehHomeDisplayMode = displayMode.value;
+        }
+        syncHomeDesktopSwitch();
     }
 
     // Giữ DOM và hành vi tìm kiếm/phân trang gốc, chỉ đổi cách xếp trang chủ trên mobile.
@@ -726,6 +750,15 @@
                 return;
             }
 
+            if (isGalleryListingPage() && isMobileMode) {
+                isMobileMode = false;
+                GM_setValue('eh_mobile_restructure_active', false);
+                document.documentElement.classList.remove('eh-home-mobile-active');
+                delete document.documentElement.dataset.ehHomeDisplayMode;
+                syncHomeDesktopSwitch();
+                return;
+            }
+
             if (isReaderPage && isMobileMode) {
                 isMobileMode = false;
                 GM_setValue('eh_mobile_restructure_active', false);
@@ -740,6 +773,8 @@
                 applyReaderMobileMode();
             } else if (isHomepage) {
                 applyHomeMobileMode();
+            } else if (isGalleryListingPage()) {
+                applyGalleryListingMobileMode();
             } else {
                 btn.style.display = 'none';
                 buildAndMountMobileApp();
