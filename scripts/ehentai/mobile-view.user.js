@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         E-Hentai Mobile View (Home, /g/, /s/)
 // @namespace    http://tampermonkey.net/
-// @version      2.19
+// @version      2.20
 // @description  Tối ưu giao diện mobile cho trang chủ, gallery /g/ và reader /s/ trên E-Hentai
 // @author       XNhanhS & AI
 // @match        *://e-hentai.org/*
@@ -24,8 +24,12 @@
     const isSmallScreen = window.innerWidth <= 850;
     let isMobileMode = GM_getValue('eh_mobile_restructure_active', isSmallScreen);
     // Mark reader documents before their first paint so the original light page cannot flash.
-    if (path.startsWith('/s/') && isMobileMode && document.documentElement) {
-        document.documentElement.classList.add('eh-reader-mobile-active', 'eh-reader-fit-width');
+    if (isMobileMode && document.documentElement) {
+        if (path.startsWith('/s/')) {
+            document.documentElement.classList.add('eh-reader-mobile-active', 'eh-reader-fit-width');
+        } else if (path === '/gallerytorrents.php') {
+            document.documentElement.classList.add('eh-torrents-mobile-active');
+        }
     }
     let readerControlsObserver = null;
     let readerToolbarResizeObserver = null;
@@ -73,6 +77,11 @@
             return;
         }
 
+        if (path === '/gallerytorrents.php') {
+            if (isMobileMode) applyTorrentMobileMode();
+            return;
+        }
+
         if (isHomepage) {
             createDesktopFloatingSwitch();
             if (isMobileMode) applyHomeMobileMode();
@@ -96,6 +105,10 @@
         return !window.location.pathname.startsWith('/g/') &&
             !window.location.pathname.startsWith('/s/') &&
             !!document.querySelector('.itg');
+    }
+
+    function applyTorrentMobileMode() {
+        document.documentElement.classList.add('eh-torrents-mobile-active');
     }
 
     function applyGalleryListingMobileMode() {
@@ -940,18 +953,21 @@
                 position: sticky !important;
                 top: 0 !important;
                 z-index: 1000 !important;
-                display: flex !important;
-                flex-wrap: wrap !important;
-                justify-content: center !important;
-                align-items: center !important;
+                display: grid !important;
+                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+                justify-content: stretch !important;
+                align-items: stretch !important;
                 gap: 4px !important;
                 box-sizing: border-box !important;
                 width: 100% !important;
+                min-width: 0 !important;
                 max-width: 100vw !important;
+                height: auto !important;
+                min-height: 0 !important;
+                max-height: none !important;
                 margin: 0 !important;
                 padding: 6px 8px !important;
-                overflow-x: visible !important;
-                overflow-y: visible !important;
+                overflow: visible !important;
                 white-space: normal !important;
                 background: #202228 !important;
                 border-bottom: 1px solid #343741 !important;
@@ -961,20 +977,33 @@
                 display: none !important;
             }
             html.eh-home-mobile-active #nb > div {
-                flex: 0 0 auto !important;
+                min-width: 0 !important;
                 margin: 0 !important;
                 padding: 0 !important;
             }
             html.eh-home-mobile-active #nb a {
-                display: block !important;
-                padding: 6px 8px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                min-height: 36px !important;
+                padding: 5px 3px !important;
+                border: 1px solid #343741 !important;
                 border-radius: 7px !important;
+                background: #292c34 !important;
                 color: #e5e7eb !important;
-                font-size: 12px !important;
+                font-size: 11px !important;
+                line-height: 1.15 !important;
+                text-align: center !important;
                 text-decoration: none !important;
+                overflow-wrap: anywhere !important;
             }
             html.eh-home-mobile-active #nb > #eh-to-mobile-switch {
-                flex: 0 0 auto !important;
+                grid-column: span 2 !important;
+                justify-self: center !important;
+                width: auto !important;
+                max-width: 100% !important;
             }
             html.eh-home-mobile-active .ido {
                 display: block !important;
@@ -1858,6 +1887,154 @@
                 html.eh-home-mobile-active table.itg .glink {
                     font-size: 13px !important;
                 }
+            }
+
+            /* TORRENT POPUP: turn fixed-width desktop rows into mobile cards. */
+            html.eh-torrents-mobile-active,
+            html.eh-torrents-mobile-active body {
+                width: 100% !important;
+                min-width: 0 !important;
+                max-width: 100vw !important;
+                min-height: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow-x: hidden !important;
+                background: #141518 !important;
+                color: #e5e7eb !important;
+                color-scheme: dark !important;
+                font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+                box-sizing: border-box !important;
+            }
+            html.eh-torrents-mobile-active body > .stuffbox {
+                box-sizing: border-box !important;
+                width: calc(100% - 16px) !important;
+                max-width: 760px !important;
+                height: auto !important;
+                margin: 8px auto !important;
+                padding: 10px !important;
+                border: 1px solid #343741 !important;
+                border-radius: 12px !important;
+                background: #1e2025 !important;
+                color: #e5e7eb !important;
+                font-size: 14px !important;
+                text-align: left !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo {
+                box-sizing: border-box !important;
+                width: 100% !important;
+                height: auto !important;
+                max-height: none !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo > div:first-child {
+                box-sizing: border-box !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                overflow: visible !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo h1 {
+                margin: 4px 0 12px !important;
+                color: #f3f4f6 !important;
+                font-size: 16px !important;
+                line-height: 1.35 !important;
+                text-align: left !important;
+                overflow-wrap: anywhere !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo p {
+                margin: 16px 0 8px !important;
+                color: #9ca3af !important;
+                font-size: 13px !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo form {
+                width: 100% !important;
+                margin: 8px 0 !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo form > div {
+                box-sizing: border-box !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 10px !important;
+                border: 1px solid #343741 !important;
+                border-radius: 9px !important;
+                background: #252830 !important;
+                color: #d1d5db !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo table,
+            html.eh-torrents-mobile-active #torrentinfo tbody {
+                display: block !important;
+                box-sizing: border-box !important;
+                width: 100% !important;
+                border: 0 !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo td {
+                box-sizing: border-box !important;
+                width: auto !important;
+                min-width: 0 !important;
+                padding: 2px 0 !important;
+                color: #d1d5db !important;
+                overflow-wrap: anywhere !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo tr:first-child {
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 3px 10px !important;
+                margin-bottom: 6px !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo tr:first-child td:nth-child(3):empty {
+                display: none !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo tr:nth-child(2) {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                gap: 8px !important;
+                padding-top: 6px !important;
+                border-top: 1px solid #343741 !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo input[type="submit"] {
+                box-sizing: border-box !important;
+                width: auto !important;
+                min-height: 34px !important;
+                padding: 0 10px !important;
+                border: 1px solid #3b414d !important;
+                border-radius: 7px !important;
+                background: #292c34 !important;
+                color: #e5e7eb !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo tr:nth-child(3) {
+                display: block !important;
+                margin-top: 6px !important;
+                padding-top: 6px !important;
+                border-top: 1px solid #343741 !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo tr:nth-child(3) td {
+                display: block !important;
+            }
+            html.eh-torrents-mobile-active #torrentinfo tr:nth-child(3) a {
+                display: block !important;
+                padding: 5px 0 !important;
+                color: #86efac !important;
+                font-weight: 600 !important;
+                line-height: 1.35 !important;
+                overflow-wrap: anywhere !important;
+                text-decoration: none !important;
+            }
+            html.eh-torrents-mobile-active .stuffbox > div:last-child {
+                margin: 10px 0 0 !important;
+                text-align: center !important;
+            }
+            html.eh-torrents-mobile-active .stuffbox > div:last-child a {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                min-height: 36px !important;
+                padding: 0 14px !important;
+                border-radius: 8px !important;
+                background: #292c34 !important;
+                color: #e5e7eb !important;
+                text-decoration: none !important;
             }
 
             /* READER /s/: ảnh vừa màn hình và điều hướng luôn nằm cạnh dưới */
